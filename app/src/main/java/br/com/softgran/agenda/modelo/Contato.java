@@ -1,8 +1,10 @@
 package br.com.softgran.agenda.modelo;
 
-public class Aluno {
+import java.io.Serializable;
 
-    private long id;
+public class Contato implements Serializable {
+
+    private Long id;
     private String nome;
     private String endereco;
     private String telefone;
@@ -10,8 +12,8 @@ public class Aluno {
     private Double nota;
 
 
-    public long getId() {return id;}
-    public void setId(long id) {this.id = id;}
+    public Long getId() {return id;}
+    public void setId(Long id) {this.id = id;}
 
     public String getNome() {return nome;}
     public void setNome(String nome) {this.nome = nome;}

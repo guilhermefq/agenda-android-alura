@@ -1,15 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:id="@+id/activity_lista_alunos"
+    android:id="@+id/activity_lista_contatos"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
     <ListView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:id="@+id/lista_alunos" />
+        android:id="@+id/lista_contatos" />
     <Button
-        android:id="@+id/novo_aluno"
+        android:id="@+id/novo_contato"
         android:layout_width="56dp"
         android:layout_height="56dp"
         android:text="+"
