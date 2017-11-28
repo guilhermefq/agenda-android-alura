@@ -25,7 +25,7 @@ public class ListaContatosActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_lista_contatos);
-        setTitle("Contatos");
+        setTitle("Contatos");//Seta o título da Activity
 
         listaContatos = (ListView) findViewById(R.id.lista_contatos);
 
