@@ -1,6 +1,10 @@
 package br.com.softgran.agenda;
 
+import android.Manifest;
 import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.net.Uri;
+import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.ContextMenu;
@@ -64,12 +68,58 @@ public class ListaContatosActivity extends AppCompatActivity {
 
     @Override
     public void onCreateContextMenu(ContextMenu menu, View view, final ContextMenu.ContextMenuInfo menuInfo) {
-        MenuItem deletar = menu.add("Deletar");
-        deletar.setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
+        final AdapterView.AdapterContextMenuInfo info = (AdapterView.AdapterContextMenuInfo) menuInfo;
+        final Contato contato = (Contato) listaContatos.getItemAtPosition(info.position);
+
+        MenuItem itemLigar = menu.add("Ligar");
+        MenuItem itemVisitarSite = menu.add("Visitar Site");
+        MenuItem itemSms = menu.add("Enviar SMS");
+        MenuItem itemDeletar = menu.add("Deletar");
+        MenuItem itemAcharMapa = menu.add("Achar no mapa");
+
+
+        //Intent para abrir Site
+        Intent intentSite = new Intent(Intent.ACTION_VIEW);
+        String site = contato.getSite();
+        if(!site.startsWith("http://")) {
+            site = "http://" + site;
+        }
+        intentSite.setData(Uri.parse(site));
+        itemVisitarSite.setIntent(intentSite);
+
+        //Intent para enviar SMS
+        Intent intentSms = new Intent(Intent.ACTION_VIEW);
+        intentSms.setData(Uri.parse("sms:" + contato.getTelefone()));
+        itemSms.setIntent(intentSms);
+
+        //Intent para Visualizar Mapa
+        Intent intentMapa = new Intent(Intent.ACTION_VIEW);
+        intentMapa.setData(Uri.parse("geo:0,0?z=14&q=" + contato.getEndereco()));
+        itemAcharMapa.setIntent(intentMapa);
+
+        //Intent para Ligação
+        itemLigar.setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
+            @Override
+            public boolean onMenuItemClick(MenuItem menuItem) {
+                if(ActivityCompat.checkSelfPermission(ListaContatosActivity.this, Manifest.permission.CALL_PHONE)
+                        != PackageManager.PERMISSION_GRANTED) {
+                    ActivityCompat.requestPermissions(ListaContatosActivity.this,
+                            new String[]{Manifest.permission.CALL_PHONE}, 123);
+
+                } else {
+                    Intent intentLigar = new Intent(Intent.ACTION_CALL);
+                    intentLigar.setData(Uri.parse("tel:" + contato.getTelefone()));
+                    startActivity(intentLigar);
+                }
+                return false;
+            }
+        });
+
+
+        //Intent para Deletar Contato
+        itemDeletar.setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
             @Override
             public boolean onMenuItemClick(MenuItem item) {
-                final AdapterView.AdapterContextMenuInfo info = (AdapterView.AdapterContextMenuInfo) menuInfo;
-                final Contato contato = (Contato) listaContatos.getItemAtPosition(info.position);
                 ContatoDAO dao = new ContatoDAO(ListaContatosActivity.this);
                 dao.deleta(contato);
                 dao.close();
