@@ -15,18 +15,29 @@ import br.com.softgran.agenda.modelo.Contato;
 public class ContatoDAO extends SQLiteOpenHelper{
 
     public ContatoDAO(Context context) {
-        super(context, "Agenda", null, 3);
+        super(context, "Agenda", null, 4);
     }
 
     public void onCreate(SQLiteDatabase db) {
-        String sql = "CREATE TABLE Contatos (id INTEGER PRIMARY KEY, nome TEXT NOT NULL, endereco TEXT, telefone TEXT, site TEXT, nota REAL);";
+        String sql = "CREATE TABLE Contatos (" +
+                "id INTEGER PRIMARY KEY, " +
+                "nome TEXT NOT NULL, " +
+                "endereco TEXT, " +
+                "telefone TEXT, " +
+                "site TEXT, " +
+                "nota REAL" +
+                "caminhoFoto TEXT);";
         db.execSQL(sql);
     }
 
     public void onUpgrade(SQLiteDatabase db, int versaoAntiga, int versaoNova) {
-        String sql = "DROP TABLE IF EXISTS Contatos;";
-        db.execSQL(sql);
-        onCreate(db);
+        String sql = "";
+        switch (versaoAntiga){
+            case 2:
+            case 3:
+                sql = "ALTER TABLE Contatos ADD COLUMN caminhoFoto TEXT;";
+                db.execSQL(sql);
+        }
     }
 
     public void insere(Contato contato) {
@@ -45,6 +56,7 @@ public class ContatoDAO extends SQLiteOpenHelper{
         dados.put("telefone", contato.getTelefone());
         dados.put("site", contato.getSite());
         dados.put("nota", contato.getNota());
+        dados.put("caminhoFoto", contato.getCaminhoFoto());
         return dados;
     }
 
@@ -61,6 +73,7 @@ public class ContatoDAO extends SQLiteOpenHelper{
             contato.setTelefone(c.getString(c.getColumnIndex("telefone")));
             contato.setSite(c.getString(c.getColumnIndex("site")));
             contato.setNota(c.getDouble(c.getColumnIndex("nota")));
+            contato.setCaminhoFoto(c.getString(c.getColumnIndex("caminhoFoto")));
             contatoes.add(contato);
         }
         c.close();
