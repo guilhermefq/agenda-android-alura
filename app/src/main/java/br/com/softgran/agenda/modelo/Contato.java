@@ -10,7 +10,7 @@ public class Contato implements Serializable {
     private String telefone;
     private String site;
     private Double nota;
-
+    private String caminhoFoto;
 
     public Long getId() {return id;}
     public void setId(Long id) {this.id = id;}
@@ -29,6 +29,9 @@ public class Contato implements Serializable {
 
     public Double getNota() {return nota;}
     public void setNota(Double nota) {this.nota = nota;}
+
+    public String getCaminhoFoto() {return caminhoFoto;}
+    public void setCaminhoFoto(String caminhoFoto) {this.caminhoFoto = caminhoFoto;}
 
     @Override
     public String toString() {
