@@ -25,12 +25,19 @@ import br.com.softgran.agenda.modelo.Contato;
 public class ListaContatosActivity extends AppCompatActivity {
 
     private ListView listaContatos;
+    private static final int CODIGO_SMS = 432;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_lista_contatos);
         setTitle("Contatos");
+
+        /*
+        if (ActivityCompat.checkSelfPermission(Manifest.permission.RECEIVE_SMS)
+                != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(new String[]{Manifest.permission.RECEIVE_SMS}, CODIGO_SMS);
+        }*/
 
         listaContatos = (ListView) findViewById(R.id.lista_contatos);
 

@@ -95,4 +95,16 @@ public class ContatoDAO extends SQLiteOpenHelper{
 
         db.update("Contatos",dados,"id = ?",params);
     }
+
+    @SuppressWarnings("SpellCheckingInspection")
+    public boolean ehContato(String telefone) {
+        SQLiteDatabase db = getReadableDatabase();// Pega uma instância de leitura do BD
+
+        //Faz uma select, passando o telefone com parametro.
+        //A consulta retorna um Cursor, apontando para o primeiro objeto da lista(do cursor)
+        Cursor cursor = db.rawQuery("SELECT * FROM Contato WHERE telefone = ?", new String[]{telefone});
+        int count = cursor.getCount();
+        cursor.close();
+        return count > 0;
+    }
 }
