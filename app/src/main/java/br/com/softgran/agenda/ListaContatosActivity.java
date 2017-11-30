@@ -18,6 +18,7 @@ import android.widget.Toast;
 
 import java.util.List;
 
+import br.com.softgran.agenda.adapter.ContatosAdapter;
 import br.com.softgran.agenda.dao.ContatoDAO;
 import br.com.softgran.agenda.modelo.Contato;
 
@@ -134,12 +135,14 @@ public class ListaContatosActivity extends AppCompatActivity {
 
     public void carregaLista() {
         ContatoDAO dao = new ContatoDAO(this);
-        List<Contato> contatoes = dao.buscaContatos();
+        List<Contato> contatos = dao.buscaContatos();
         dao.close();
 
         ListView listaContatos = (ListView) findViewById(R.id.lista_contatos);
-        ArrayAdapter<Contato> adapter =
-                new ArrayAdapter<>(this,android.R.layout.simple_list_item_1, contatoes);
+        ContatosAdapter adapter = new ContatosAdapter(ListaContatosActivity.this, contatos);
+
+        //Outro método de criação de adapter
+        //ArrayAdapter<Contato> adapter = new ArrayAdapter<>(this,android.R.layout.simple_list_item_1, contatos);
 
         listaContatos.setAdapter(adapter);
     }
