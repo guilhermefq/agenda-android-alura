@@ -61,7 +61,7 @@ public class ContatoDAO extends SQLiteOpenHelper{
     }
 
 
-    public List<Contato> buscaContatos() {
+    public List<Contato> getContatos() {
         SQLiteDatabase db = getReadableDatabase();
         Cursor c = db.rawQuery("SELECT * FROM Contatos", null);
         List<Contato> contatoes = new ArrayList<Contato>();
@@ -102,7 +102,7 @@ public class ContatoDAO extends SQLiteOpenHelper{
 
         //Faz uma select, passando o telefone com parametro.
         //A consulta retorna um Cursor, apontando para o primeiro objeto da lista(do cursor)
-        Cursor cursor = db.rawQuery("SELECT * FROM Contato WHERE telefone = ?", new String[]{telefone});
+        Cursor cursor = db.rawQuery("SELECT * FROM Contatos WHERE telefone = ?", new String[]{telefone});
         int count = cursor.getCount();
         cursor.close();
         return count > 0;

@@ -8,10 +8,10 @@ import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.ContextMenu;
+import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ListView;
 import android.widget.Toast;
@@ -19,6 +19,7 @@ import android.widget.Toast;
 import java.util.List;
 
 import br.com.softgran.agenda.adapter.ContatosAdapter;
+import br.com.softgran.agenda.converter.ContatoConverter;
 import br.com.softgran.agenda.dao.ContatoDAO;
 import br.com.softgran.agenda.modelo.Contato;
 
@@ -33,11 +34,10 @@ public class ListaContatosActivity extends AppCompatActivity {
         setContentView(R.layout.activity_lista_contatos);
         setTitle("Contatos");
 
-        /*
-        if (ActivityCompat.checkSelfPermission(Manifest.permission.RECEIVE_SMS)
+        if (ActivityCompat.checkSelfPermission(ListaContatosActivity.this, Manifest.permission.RECEIVE_SMS)
                 != PackageManager.PERMISSION_GRANTED) {
-            ActivityCompat.requestPermissions(new String[]{Manifest.permission.RECEIVE_SMS}, CODIGO_SMS);
-        }*/
+            ActivityCompat.requestPermissions(ListaContatosActivity.this, new String[]{Manifest.permission.RECEIVE_SMS}, CODIGO_SMS);
+        }
 
         listaContatos = (ListView) findViewById(R.id.lista_contatos);
 
@@ -72,6 +72,24 @@ public class ListaContatosActivity extends AppCompatActivity {
     protected void onResume() {
         super.onResume();
         carregaLista();
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.menu_lista_alunos, menu);//Get no menu, infla ele, passando o XML do leiaute
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+
+        switch (item.getItemId()) {
+            case R.id.enviar_notas:
+                new EnviaContatosTask(this).execute();
+                break;
+        }
+
+        return super.onOptionsItemSelected(item);
     }
 
     @Override
@@ -132,7 +150,7 @@ public class ListaContatosActivity extends AppCompatActivity {
                 dao.deleta(contato);
                 dao.close();
 
-                Toast.makeText(ListaContatosActivity.this, "Deletando o contato " + contato.getNome(), Toast.LENGTH_SHORT).show();
+                Toast.makeText(ListaContatosActivity.this, "Deletado o contato " + contato.getNome(), Toast.LENGTH_SHORT).show();
 
                 carregaLista();
                 return false;
@@ -142,7 +160,7 @@ public class ListaContatosActivity extends AppCompatActivity {
 
     public void carregaLista() {
         ContatoDAO dao = new ContatoDAO(this);
-        List<Contato> contatos = dao.buscaContatos();
+        List<Contato> contatos = dao.getContatos();
         dao.close();
 
         ListView listaContatos = (ListView) findViewById(R.id.lista_contatos);
