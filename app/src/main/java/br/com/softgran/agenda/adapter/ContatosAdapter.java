@@ -58,6 +58,16 @@ public class ContatosAdapter extends BaseAdapter {
         TextView campoTelefone = view.findViewById(R.id.item_telefone);
         campoTelefone.setText(contato.getTelefone());
 
+        TextView campoEndereco = view.findViewById(R.id.item_endereco);
+        if (campoEndereco != null) {
+            campoEndereco.setText(contato.getEndereco());
+        }
+
+        TextView campoSite = view.findViewById(R.id.item_site);
+        if(campoSite != null) {
+            campoSite.setText(contato.getSite());
+        }
+
         ImageView campoFoto = view.findViewById(R.id.item_foto);
         String caminhoFoto = contato.getCaminhoFoto();
         if (caminhoFoto != null) {
