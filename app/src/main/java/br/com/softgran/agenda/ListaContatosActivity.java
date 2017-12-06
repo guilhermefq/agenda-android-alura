@@ -19,7 +19,6 @@ import android.widget.Toast;
 import java.util.List;
 
 import br.com.softgran.agenda.adapter.ContatosAdapter;
-import br.com.softgran.agenda.converter.ContatoConverter;
 import br.com.softgran.agenda.dao.ContatoDAO;
 import br.com.softgran.agenda.modelo.Contato;
 
@@ -76,7 +75,7 @@ public class ListaContatosActivity extends AppCompatActivity {
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.menu_lista_alunos, menu);//Get no menu, infla ele, passando o XML do leiaute
+        getMenuInflater().inflate(R.menu.menu_lista_contatos, menu);//Get no menu, infla ele, passando o XML do leiaute
         return true;
     }
 
@@ -86,6 +85,10 @@ public class ListaContatosActivity extends AppCompatActivity {
         switch (item.getItemId()) {
             case R.id.enviar_notas:
                 new EnviaContatosTask(this).execute();
+                break;
+            case R.id.menu_baixar_provas:
+                Intent vaiParaProvas = new Intent(this, ProvasActivity.class);
+                startActivity(vaiParaProvas);
                 break;
         }
 
