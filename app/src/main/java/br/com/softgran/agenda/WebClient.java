@@ -50,9 +50,10 @@ public class WebClient {
         return null;
     }
 
-    public void insere(String json) {
-        String endereco = "http://192.168.15.180:8080/api/aluno";
-        realizaRequisicao(json, endereco);
-    }
+//  Função obseta - Utilizado plugin Retrofit
+//    public void insere(String json) {
+//        String endereco = "http://192.168.15.180:8080/api/aluno";
+//        realizaRequisicao(json, endereco);
+//    }
 
 }

@@ -10,6 +10,8 @@ import br.com.softgran.agenda.modelo.Contato;
  * Created by guilhermefq on 14/12/17.
  */
 
+//  Clase obsoleta - Utilizando o plugin Retrofit
+
 public class InsereContatoTask extends AsyncTask{
     private final Contato contato;
 
@@ -19,9 +21,8 @@ public class InsereContatoTask extends AsyncTask{
 
     @Override
     protected Object doInBackground(Object[] objects) {
-        String json = new ContatoConverter().converteParaJsonCompleto(contato);
-
-        new WebClient().insere(json);
+//        String json = new ContatoConverter().converteParaJsonCompleto(contato);
+//        new WebClient().insere(json);
 
 
         return null;
