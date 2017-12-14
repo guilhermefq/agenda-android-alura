@@ -19,6 +19,7 @@ import java.io.File;
 
 import br.com.softgran.agenda.dao.ContatoDAO;
 import br.com.softgran.agenda.modelo.Contato;
+import br.com.softgran.agenda.tasks.InsereContatoTask;
 
 public class FormularioActivity extends AppCompatActivity {
 
@@ -95,6 +96,8 @@ public class FormularioActivity extends AppCompatActivity {
                             Toast.LENGTH_SHORT).show();
                 }
                 dao.close();
+
+                new InsereContatoTask(contato).execute();
 
                 finish();
                 break;
