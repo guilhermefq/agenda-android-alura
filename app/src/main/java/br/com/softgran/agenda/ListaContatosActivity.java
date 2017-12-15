@@ -20,7 +20,12 @@ import java.util.List;
 
 import br.com.softgran.agenda.adapter.ContatosAdapter;
 import br.com.softgran.agenda.dao.ContatoDAO;
+import br.com.softgran.agenda.dto.ContatoSync;
 import br.com.softgran.agenda.modelo.Contato;
+import br.com.softgran.agenda.retrofit.RetrofitInicializador;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 public class ListaContatosActivity extends AppCompatActivity {
 
@@ -70,6 +75,25 @@ public class ListaContatosActivity extends AppCompatActivity {
     @Override
     protected void onResume() {
         super.onResume();
+
+
+        Call<ContatoSync> call = new RetrofitInicializador().getContatoService().lista();
+        call.enqueue(new Callback<ContatoSync>() {
+            @Override
+            public void onResponse(Call<ContatoSync> call, Response<ContatoSync> response) {
+                ContatoSync contatoSync = response.body();// Pega a resposta da requisição.Retorna o conteúdo do corpo(body) da requisição HTTP
+                ContatoDAO contatoDAO = new ContatoDAO(ListaContatosActivity.this);
+                contatoDAO.sincroniza(contatoSync.getContatos());
+                contatoDAO.close();
+                carregaLista();
+            }
+
+            @Override
+            public void onFailure(Call<ContatoSync> call, Throwable t) {
+                Log.e("onFailure chamado", t.getMessage());
+            }
+        });
+
         carregaLista();
     }
 
@@ -165,6 +189,10 @@ public class ListaContatosActivity extends AppCompatActivity {
         ContatoDAO dao = new ContatoDAO(this);
         List<Contato> contatos = dao.getContatos();
         dao.close();
+
+        for(Contato contato: contatos) {
+            Log.i("ID do Contato:", String.valueOf(contato.getId()));
+        }
 
         ListView listaContatos = (ListView) findViewById(R.id.lista_contatos);
         ContatosAdapter adapter = new ContatosAdapter(ListaContatosActivity.this, contatos);
