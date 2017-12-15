@@ -1,6 +1,8 @@
 package br.com.softgran.agenda.retrofit;
 
 import br.com.softgran.agenda.service.ContatoService;
+import okhttp3.OkHttpClient;
+import okhttp3.logging.HttpLoggingInterceptor;
 import retrofit2.Retrofit;
 import retrofit2.converter.jackson.JacksonConverterFactory;
 
@@ -13,9 +15,19 @@ public class RetrofitInicializador {
     private final Retrofit retrofit;
 
     public RetrofitInicializador() {
+
+        HttpLoggingInterceptor httpLoggingInterceptor = new HttpLoggingInterceptor();
+        httpLoggingInterceptor.setLevel(HttpLoggingInterceptor.Level.BODY);
+
+        // Criação de um Client para poder vincular o LogInterceptor ao Retrofit
+        OkHttpClient.Builder client = new OkHttpClient.Builder();
+        client.addInterceptor(httpLoggingInterceptor);
+
+
         retrofit = new Retrofit.Builder()
                 .baseUrl("Http:192.168.15.180:8080/api/")
                 .addConverterFactory(JacksonConverterFactory.create())
+                .client(client.build())
                 .build();
     }
 

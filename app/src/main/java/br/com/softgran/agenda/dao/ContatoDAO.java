@@ -9,18 +9,19 @@ import android.support.annotation.NonNull;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 import br.com.softgran.agenda.modelo.Contato;
 
 public class ContatoDAO extends SQLiteOpenHelper{
 
     public ContatoDAO(Context context) {
-        super(context, "Agenda", null, 4);
+        super(context, "Agenda", null, 6);
     }
 
     public void onCreate(SQLiteDatabase db) {
         String sql = "CREATE TABLE Contatos (" +
-                "id INTEGER PRIMARY KEY, " +
+                "id CHAR(36) PRIMARY KEY, " +
                 "nome TEXT NOT NULL, " +
                 "endereco TEXT, " +
                 "telefone TEXT, " +
@@ -37,7 +38,43 @@ public class ContatoDAO extends SQLiteOpenHelper{
             case 3:
                 sql = "ALTER TABLE Contatos ADD COLUMN caminhoFoto TEXT;";
                 db.execSQL(sql);
+            case 4:
+                String novaTabela = "CREATE TABLE Contatos_Novo (" +
+                        "id CHAR(36) PRIMARY KEY, " +
+                        "nome TEXT NOT NULL, " +
+                        "endereco TEXT, " +
+                        "telefone TEXT, " +
+                        "site TEXT, " +
+                        "nota REAL," +
+                        "caminhoFoto TEXT);";
+                db.execSQL(novaTabela);
+
+                String atualizaNovatabela = "INSERT INTO Contatos_Novo " +
+                        "(id, nome, endereco, telefone, site, nota, caminhoFoto) " +
+                        "SELECT id, nome , endereco, telefone, site, nota, caminhoFoto " +
+                        "FROM Contatos";
+                db.execSQL(atualizaNovatabela);
+
+                String removerTabelaAntiga = "DROP TABLE Contatos";
+                db.execSQL(removerTabelaAntiga);
+
+                String alterarNovaTabela = "ALTER TABLE Contatos_Novo " +
+                        "RENAME TO Contatos";
+                db.execSQL(alterarNovaTabela);
+            case 5:
+                String buscaContatos = "SELECT * FROM Contatos";
+                Cursor cursor = db.rawQuery(buscaContatos, null);
+                List<Contato> contatos = populaContatos(cursor);
+
+                String atualizaIDContato = "UPDATE Contatos SET id=? WHERE id=?";
+                for(Contato contato : contatos) {
+                    db.execSQL(atualizaIDContato, new String[] {geraUUID(), contato.getId()});
+                }
         }
+    }
+
+    private String geraUUID() {
+        return UUID.randomUUID().toString();
     }
 
     public void insere(Contato contato) {
@@ -64,20 +101,26 @@ public class ContatoDAO extends SQLiteOpenHelper{
     public List<Contato> getContatos() {
         SQLiteDatabase db = getReadableDatabase();
         Cursor c = db.rawQuery("SELECT * FROM Contatos", null);
-        List<Contato> contatoes = new ArrayList<Contato>();
+        List<Contato> contatoes = populaContatos(c);
+        c.close();
+        return contatoes;
+    }
+
+    @NonNull
+    private List<Contato> populaContatos(Cursor c) {
+        List<Contato> contatos = new ArrayList<Contato>();
         while(c.moveToNext()){
             Contato contato = new Contato();
-            contato.setId(c.getLong(c.getColumnIndex("id")));
+            contato.setId(c.getString(c.getColumnIndex("id")));
             contato.setNome(c.getString(c.getColumnIndex("nome")));
             contato.setEndereco(c.getString(c.getColumnIndex("endereco")));
             contato.setTelefone(c.getString(c.getColumnIndex("telefone")));
             contato.setSite(c.getString(c.getColumnIndex("site")));
             contato.setNota(c.getDouble(c.getColumnIndex("nota")));
             contato.setCaminhoFoto(c.getString(c.getColumnIndex("caminhoFoto")));
-            contatoes.add(contato);
+            contatos.add(contato);
         }
-        c.close();
-        return contatoes;
+        return contatos;
     }
 
     public void deleta(Contato contato) {
