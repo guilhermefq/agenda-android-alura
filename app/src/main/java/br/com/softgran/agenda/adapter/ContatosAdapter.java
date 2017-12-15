@@ -71,12 +71,12 @@ public class ContatosAdapter extends BaseAdapter {
 
         ImageView campoFoto = view.findViewById(R.id.item_foto);
         String caminhoFoto = contato.getCaminhoFoto();
-        if (caminhoFoto != null) {
-            Bitmap bitmap = BitmapFactory.decodeFile(caminhoFoto);
-            Bitmap bitmapReduzido = Bitmap.createScaledBitmap(bitmap, 100, 100, true);
-            campoFoto.setImageBitmap(bitmapReduzido);
-            campoFoto.setScaleType(ImageView.ScaleType.FIT_XY);
-        }
+//        if (caminhoFoto != null) {
+//            Bitmap bitmap = BitmapFactory.decodeFile(caminhoFoto);
+//            Bitmap bitmapReduzido = Bitmap.createScaledBitmap(bitmap, 100, 100, true);
+//            campoFoto.setImageBitmap(bitmapReduzido);
+//            campoFoto.setScaleType(ImageView.ScaleType.FIT_XY);
+//        }
 
         return view;
     }

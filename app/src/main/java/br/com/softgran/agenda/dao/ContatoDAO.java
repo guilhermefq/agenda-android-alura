@@ -26,7 +26,7 @@ public class ContatoDAO extends SQLiteOpenHelper{
                 "endereco TEXT, " +
                 "telefone TEXT, " +
                 "site TEXT, " +
-                "nota REAL" +
+                "nota REAL," +
                 "caminhoFoto TEXT);";
         db.execSQL(sql);
     }
@@ -80,6 +80,9 @@ public class ContatoDAO extends SQLiteOpenHelper{
     public void insere(Contato contato) {
         SQLiteDatabase db = getWritableDatabase();
 
+        if(contato.getId() == null) {
+            contato.setId(geraUUID());
+        }
         ContentValues dados = pegaDadosContato(contato);
 
         db.insert("Contatos", null, dados);
@@ -88,6 +91,7 @@ public class ContatoDAO extends SQLiteOpenHelper{
     @NonNull
     private ContentValues pegaDadosContato(Contato contato) {
         ContentValues dados = new ContentValues();
+        dados.put("id", contato.getId());
         dados.put("nome", contato.getNome());
         dados.put("endereco", contato.getEndereco());
         dados.put("telefone", contato.getTelefone());
@@ -146,6 +150,27 @@ public class ContatoDAO extends SQLiteOpenHelper{
         //Faz uma select, passando o telefone com parametro.
         //A consulta retorna um Cursor, apontando para o primeiro objeto da lista(do cursor)
         Cursor cursor = db.rawQuery("SELECT * FROM Contatos WHERE telefone = ?", new String[]{telefone});
+        int count = cursor.getCount();
+        cursor.close();
+        return count > 0;
+    }
+
+    public void sincroniza(List<Contato> contatos) {
+
+        for(Contato contato:
+                contatos) {
+            if(existe(contato)) {// Verifica se o contato existe no BD interno
+                altera(contato);
+            } else {
+                insere(contato);
+            }
+        }
+    }
+
+    private boolean existe(Contato contato) {
+        SQLiteDatabase db = getReadableDatabase();
+        String query = "SELECT id FROM Contatos WHERE id=? LIMIT 1";//LIMIT 1 para retornar o primeiro resultado(linha)
+        Cursor cursor = db.rawQuery(query, new String[]{contato.getId()});
         int count = cursor.getCount();
         cursor.close();
         return count > 0;
