@@ -38,8 +38,7 @@ public class ContatosAdapter extends BaseAdapter {
 
     @Override
     public long getItemId(int position) {
-        //return contatos.get(position).getId();
-        return  0;
+        return contatos.get(position).getId();
     }
 
     @Override

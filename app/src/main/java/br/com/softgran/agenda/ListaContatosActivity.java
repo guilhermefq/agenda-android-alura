@@ -7,7 +7,6 @@ import android.net.Uri;
 import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.ContextMenu;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -166,10 +165,6 @@ public class ListaContatosActivity extends AppCompatActivity {
         ContatoDAO dao = new ContatoDAO(this);
         List<Contato> contatos = dao.getContatos();
         dao.close();
-
-        for(Contato contato: contatos) {
-            Log.i("ID do Contato", contato.getId());
-        }
 
         ListView listaContatos = (ListView) findViewById(R.id.lista_contatos);
         ContatosAdapter adapter = new ContatosAdapter(ListaContatosActivity.this, contatos);
