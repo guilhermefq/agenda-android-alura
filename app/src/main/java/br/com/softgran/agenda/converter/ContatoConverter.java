@@ -35,4 +35,24 @@ public class ContatoConverter {
 
         return "";
     }
+
+//    Meto obsoleto - Utilizado o Retrofit e o Jackson Convertar no lugar
+//    public String converteParaJsonCompleto(Contato contato) {
+//        JSONStringer jsonStringer = new JSONStringer();
+//        try {
+//            jsonStringer.object()
+//                    .key("id").value(contato.getId())
+//                    .key("nome").value(contato.getNome())
+//                    .key("endereco").value(contato.getEndereco())
+//                    .key("telefone").value(contato.getTelefone())
+//                    .key("site").value(contato.getSite())
+//                    .key("nota").value(contato.getNota())
+//                    .key("caminhoFoto").value(contato.getCaminhoFoto())
+//                    .endObject();
+//        } catch (JSONException e) {
+//            e.printStackTrace();
+//        }
+//
+//        return jsonStringer.toString();
+//    }
 }

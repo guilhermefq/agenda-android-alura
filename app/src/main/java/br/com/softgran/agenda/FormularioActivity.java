@@ -8,6 +8,7 @@ import android.provider.MediaStore;
 import android.support.v4.content.FileProvider;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -19,6 +20,11 @@ import java.io.File;
 
 import br.com.softgran.agenda.dao.ContatoDAO;
 import br.com.softgran.agenda.modelo.Contato;
+import br.com.softgran.agenda.retrofit.RetrofitInicializador;
+import br.com.softgran.agenda.tasks.InsereContatoTask;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 public class FormularioActivity extends AppCompatActivity {
 
@@ -95,6 +101,22 @@ public class FormularioActivity extends AppCompatActivity {
                             Toast.LENGTH_SHORT).show();
                 }
                 dao.close();
+
+                //new InsereContatoTask(contato).execute();
+
+                Call<Void> call = new RetrofitInicializador().getContatoService().insere(contato);
+                //call.execute();//Execução sincrona, utiliza a thread principal
+                call.enqueue(new Callback<Void>() {
+                    @Override
+                    public void onResponse(Call<Void> call, Response<Void> response) {
+                        Log.i("onResponse", "Requisição enviada com sucesso!");
+                    }
+
+                    @Override
+                    public void onFailure(Call<Void> call, Throwable t) {
+                        Log.e("onFailure", "Erro no processamento da requisição");
+                    }
+                });
 
                 finish();
                 break;
