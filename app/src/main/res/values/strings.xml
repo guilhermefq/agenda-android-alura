@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">Agenda - v0.1</string>
+    <string name="app_name">Agenda</string>
     <string name="campo_nome">Nome</string>
     <string name="campo_endereco">Endereço</string>
     <string name="campo_telefone">Telefone</string>
