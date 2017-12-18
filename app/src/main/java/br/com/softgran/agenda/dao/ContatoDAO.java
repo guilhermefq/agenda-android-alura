@@ -16,7 +16,7 @@ import br.com.softgran.agenda.modelo.Contato;
 public class ContatoDAO extends SQLiteOpenHelper{
 
     public ContatoDAO(Context context) {
-        super(context, "Agenda", null, 6);
+        super(context, "Agenda", null, 7);
     }
 
     public void onCreate(SQLiteDatabase db) {
@@ -70,6 +70,9 @@ public class ContatoDAO extends SQLiteOpenHelper{
                 for(Contato contato : contatos) {
                     db.execSQL(atualizaIDContato, new String[] {geraUUID(), contato.getId()});
                 }
+            case 6:
+                sql = "UPDATE Contatos SET caminhoFoto = NULL";
+                db.execSQL(sql);
         }
     }
 

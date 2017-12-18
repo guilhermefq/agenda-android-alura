@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.support.v4.app.ActivityCompat;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
@@ -31,6 +32,7 @@ import retrofit2.Response;
 public class ListaContatosActivity extends AppCompatActivity {
 
     private ListView listaContatos;
+    private SwipeRefreshLayout swipe;
     private static final int CODIGO_SMS = 432;
 
     @Override
@@ -45,6 +47,14 @@ public class ListaContatosActivity extends AppCompatActivity {
         }
 
         listaContatos = (ListView) findViewById(R.id.lista_contatos);
+        swipe = (SwipeRefreshLayout) findViewById(R.id.swipe_lista_contatos);
+
+        swipe.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+                buscaContatoServidor();
+            }
+        });
 
         Button novoContato = (Button) findViewById(R.id.novo_contato);
         novoContato.setOnClickListener(new View.OnClickListener() {
@@ -71,13 +81,19 @@ public class ListaContatosActivity extends AppCompatActivity {
         });
 
         registerForContextMenu(listaContatos);
+
+        buscaContatoServidor();
+
     }
 
     @Override
     protected void onResume() {
         super.onResume();
 
+        carregaLista();
+    }
 
+    private void buscaContatoServidor() {
         Call<ContatoSync> call = new RetrofitInicializador().getContatoService().lista();
         call.enqueue(new Callback<ContatoSync>() {
             @Override
@@ -87,15 +103,16 @@ public class ListaContatosActivity extends AppCompatActivity {
                 contatoDAO.sincroniza(contatoSync.getContatos());
                 contatoDAO.close();
                 carregaLista();
+                swipe.setRefreshing(false);
             }
 
             @Override
             public void onFailure(Call<ContatoSync> call, Throwable t) {
                 Log.e("onFailure chamado", t.getMessage());
+                Toast.makeText(ListaContatosActivity.this, "Erro ao atualizar os contatos!", Toast.LENGTH_SHORT).show();
+                swipe.setRefreshing(false);
             }
         });
-
-        carregaLista();
     }
 
     @Override
@@ -178,13 +195,25 @@ public class ListaContatosActivity extends AppCompatActivity {
         itemDeletar.setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
             @Override
             public boolean onMenuItemClick(MenuItem item) {
-                ContatoDAO dao = new ContatoDAO(ListaContatosActivity.this);
-                dao.deleta(contato);
-                dao.close();
 
-                Toast.makeText(ListaContatosActivity.this, "Deletado o contato " + contato.getNome(), Toast.LENGTH_SHORT).show();
+                Call<Void> call = new RetrofitInicializador().getContatoService().deleta(contato.getId());
+                call.enqueue(new Callback<Void>() {
+                    @Override
+                    public void onResponse(Call<Void> call, Response<Void> response) {
+                        ContatoDAO dao = new ContatoDAO(ListaContatosActivity.this);
+                        dao.deleta(contato);
+                        dao.close();
+                        Toast.makeText(ListaContatosActivity.this,
+                                "Deletado o contato " + contato.getNome(), Toast.LENGTH_SHORT).show();
+                        carregaLista();
+                    }
 
-                carregaLista();
+                    @Override
+                    public void onFailure(Call<Void> call, Throwable t) {
+                        Toast.makeText(ListaContatosActivity.this,
+                                "Erro ao deletar o contato. Tente novamente!", Toast.LENGTH_SHORT).show();
+                    }
+                });
                 return false;
             }
         });
