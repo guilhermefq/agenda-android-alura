@@ -18,11 +18,16 @@ import android.widget.Button;
 import android.widget.ListView;
 import android.widget.Toast;
 
+import org.greenrobot.eventbus.EventBus;
+import org.greenrobot.eventbus.Subscribe;
+import org.greenrobot.eventbus.ThreadMode;
+
 import java.util.List;
 
 import br.com.softgran.agenda.adapter.ContatosAdapter;
 import br.com.softgran.agenda.dao.ContatoDAO;
 import br.com.softgran.agenda.dto.ContatoSync;
+import br.com.softgran.agenda.event.AtualizaListaAlunoEvent;
 import br.com.softgran.agenda.modelo.Contato;
 import br.com.softgran.agenda.retrofit.RetrofitInicializador;
 import retrofit2.Call;
@@ -34,12 +39,15 @@ public class ListaContatosActivity extends AppCompatActivity {
     private ListView listaContatos;
     private SwipeRefreshLayout swipe;
     private static final int CODIGO_SMS = 432;
+    private EventBus eventBus;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_lista_contatos);
         setTitle("Contatos");
+
+        eventBus = EventBus.getDefault();
 
         if (ActivityCompat.checkSelfPermission(ListaContatosActivity.this, Manifest.permission.RECEIVE_SMS)
                 != PackageManager.PERMISSION_GRANTED) {
@@ -89,7 +97,7 @@ public class ListaContatosActivity extends AppCompatActivity {
     @Override
     protected void onResume() {
         super.onResume();
-
+        eventBus.register(this);// Registra a Activity para que ele receba o evento do EventBus
         carregaLista();
     }
 
@@ -224,9 +232,9 @@ public class ListaContatosActivity extends AppCompatActivity {
         List<Contato> contatos = dao.getContatos();
         dao.close();
 
-        for(Contato contato: contatos) {
-            Log.i("ID do Contato:", String.valueOf(contato.getId()));
-        }
+//        for(Contato contato: contatos) {
+//            Log.i("ID do Contato:", String.valueOf(contato.getId()));
+//        }
 
         ListView listaContatos = (ListView) findViewById(R.id.lista_contatos);
         ContatosAdapter adapter = new ContatosAdapter(ListaContatosActivity.this, contatos);
@@ -235,5 +243,17 @@ public class ListaContatosActivity extends AppCompatActivity {
         //ArrayAdapter<Contato> adapter = new ArrayAdapter<>(this,android.R.layout.simple_list_item_1, contatos);
 
         listaContatos.setAdapter(adapter);
+    }
+
+    //Comando @Subscribe indica que está função deve ser executada ao ser recebido o EventBus
+    @Subscribe(threadMode = ThreadMode.MAIN) //Indica que a função só deve ser executada na thread principal
+    public void atualizaListaAlunoEvent(AtualizaListaAlunoEvent alunoEvent) {
+        carregaLista();;
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        eventBus.unregister(this);
     }
 }
