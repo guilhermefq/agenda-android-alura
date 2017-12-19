@@ -1,6 +1,7 @@
 package br.com.softgran.agenda.retrofit;
 
 import br.com.softgran.agenda.service.ContatoService;
+import br.com.softgran.agenda.service.DispositivoService;
 import okhttp3.OkHttpClient;
 import okhttp3.logging.HttpLoggingInterceptor;
 import retrofit2.Retrofit;
@@ -34,4 +35,6 @@ public class RetrofitInicializador {
     public ContatoService getContatoService() {
         return retrofit.create(ContatoService.class);
     }
+
+    public DispositivoService getDispositivoService() { return retrofit.create(DispositivoService.class);}
 }
