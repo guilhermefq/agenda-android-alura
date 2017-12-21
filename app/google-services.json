@@ -1,0 +1,55 @@
+{
+  "project_info": {
+    "project_number": "679882926434",
+    "firebase_url": "https://agenda-sync-gfq.firebaseio.com",
+    "project_id": "agenda-sync-gfq",
+    "storage_bucket": "agenda-sync-gfq.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:679882926434:android:5ee4a41e232c7942",
+        "android_client_info": {
+          "package_name": "br.com.softgran.agenda"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "679882926434-bvgr5rkkbpkhd2ee50br2iuuh7b07auj.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "br.com.softgran.agenda",
+            "certificate_hash": "b5e6decc03b1e5360d8384609e14dd9d14e32082"
+          }
+        },
+        {
+          "client_id": "679882926434-heg68m8mro9fjjhddstbcava1mh7n75f.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAu3QM1otGnyf6soregVHv9B9Iq9I2vm84"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 2,
+          "other_platform_oauth_client": [
+            {
+              "client_id": "679882926434-heg68m8mro9fjjhddstbcava1mh7n75f.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

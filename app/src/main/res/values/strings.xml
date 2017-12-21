@@ -4,4 +4,5 @@
     <string name="campo_endereco">Endereço</string>
     <string name="campo_telefone">Telefone</string>
     <string name="campo_site">Site</string>
+    <string name="title_activity_maps">Mapa</string>
 </resources>
