@@ -163,8 +163,12 @@ public class ContatoDAO extends SQLiteOpenHelper{
         for(Contato contato:
                 contatos) {
             if(existe(contato)) {// Verifica se o contato existe no BD interno
-                altera(contato);
-            } else {
+                if(contato.estaDesativado()){
+                    deleta(contato);
+                } else {
+                    altera(contato);
+                }
+            } else if(!contato.estaDesativado()) {
                 insere(contato);
             }
         }

@@ -248,7 +248,7 @@ public class ListaContatosActivity extends AppCompatActivity {
     //Comando @Subscribe indica que está função deve ser executada ao ser recebido o EventBus
     @Subscribe(threadMode = ThreadMode.MAIN) //Indica que a função só deve ser executada na thread principal
     public void atualizaListaAlunoEvent(AtualizaListaAlunoEvent alunoEvent) {
-        carregaLista();;
+        carregaLista();
     }
 
     @Override

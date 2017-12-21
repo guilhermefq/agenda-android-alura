@@ -16,7 +16,7 @@ public class Contato implements Serializable {
     private String site;
     private Double nota;
     private String caminhoFoto;
-    private int destivado;
+    private int desativado;
 
     public String getId() {return id;}
     public void setId(String id) {this.id = id;}
@@ -39,9 +39,12 @@ public class Contato implements Serializable {
     public String getCaminhoFoto() {return caminhoFoto;}
     public void setCaminhoFoto(String caminhoFoto) {this.caminhoFoto = caminhoFoto;}
 
-    public int getDestivado() {return destivado;}
+    public int getDesativado() {return desativado;}
+    public void setDesativado(int desativado) {this.desativado = desativado;}
 
-    public void setDestivado(int destivado) {this.destivado = destivado;}
+    public boolean estaDesativado() {
+        return desativado == 1;
+    }
 
     @Override
     public String toString() {
