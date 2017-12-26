@@ -13,7 +13,7 @@ import java.util.Map;
 
 import br.com.softgran.agenda.dao.ContatoDAO;
 import br.com.softgran.agenda.dto.ContatoSync;
-import br.com.softgran.agenda.event.AtualizaListaAlunoEvent;
+import br.com.softgran.agenda.event.AtualizaListaContatoEvent;
 
 /**
  * Created by GUIFA on 19/12/2017.
@@ -44,7 +44,7 @@ public class AgendaMessaginService extends FirebaseMessagingService {
                 dao.close();
 
                 EventBus eventBus = EventBus.getDefault();//Cria um EventBus para avisar a ListContatosActivity para carreagarnovamente a lista.
-                eventBus.post(new AtualizaListaAlunoEvent());
+                eventBus.post(new AtualizaListaContatoEvent());
             } catch (IOException e) {
                 e.printStackTrace();
             }

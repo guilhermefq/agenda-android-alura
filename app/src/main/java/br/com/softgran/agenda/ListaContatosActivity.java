@@ -8,7 +8,6 @@ import android.support.v4.app.ActivityCompat;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.ContextMenu;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -26,16 +25,17 @@ import java.util.List;
 
 import br.com.softgran.agenda.adapter.ContatosAdapter;
 import br.com.softgran.agenda.dao.ContatoDAO;
-import br.com.softgran.agenda.dto.ContatoSync;
-import br.com.softgran.agenda.event.AtualizaListaAlunoEvent;
+import br.com.softgran.agenda.event.AtualizaListaContatoEvent;
 import br.com.softgran.agenda.modelo.Contato;
 import br.com.softgran.agenda.retrofit.RetrofitInicializador;
+import br.com.softgran.agenda.sinc.ContatoSincronizador;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
 public class ListaContatosActivity extends AppCompatActivity {
 
+    private final ContatoSincronizador sincronizador = new ContatoSincronizador(this);
     private ListView listaContatos;
     private SwipeRefreshLayout swipe;
     private static final int CODIGO_SMS = 432;
@@ -60,7 +60,7 @@ public class ListaContatosActivity extends AppCompatActivity {
         swipe.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
-                buscaContatoServidor();
+                sincronizador.buscaTodos();
             }
         });
 
@@ -90,7 +90,7 @@ public class ListaContatosActivity extends AppCompatActivity {
 
         registerForContextMenu(listaContatos);
 
-        buscaContatoServidor();
+        sincronizador.buscaTodos();
 
     }
 
@@ -101,27 +101,9 @@ public class ListaContatosActivity extends AppCompatActivity {
         carregaLista();
     }
 
-    private void buscaContatoServidor() {
-        Call<ContatoSync> call = new RetrofitInicializador().getContatoService().lista();
-        call.enqueue(new Callback<ContatoSync>() {
-            @Override
-            public void onResponse(Call<ContatoSync> call, Response<ContatoSync> response) {
-                ContatoSync contatoSync = response.body();// Pega a resposta da requisição.Retorna o conteúdo do corpo(body) da requisição HTTP
-                ContatoDAO contatoDAO = new ContatoDAO(ListaContatosActivity.this);
-                contatoDAO.sincroniza(contatoSync.getContatos());
-                contatoDAO.close();
-                carregaLista();
-                swipe.setRefreshing(false);
-            }
-
-            @Override
-            public void onFailure(Call<ContatoSync> call, Throwable t) {
-                Log.e("onFailure chamado", t.getMessage());
-                Toast.makeText(ListaContatosActivity.this, "Erro ao atualizar os contatos!", Toast.LENGTH_SHORT).show();
-                swipe.setRefreshing(false);
-            }
-        });
-    }
+//    private void buscaContatoServidor() {
+//        sincronizador.buscaContatoServidor();
+//    }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -247,7 +229,8 @@ public class ListaContatosActivity extends AppCompatActivity {
 
     //Comando @Subscribe indica que está função deve ser executada ao ser recebido o EventBus
     @Subscribe(threadMode = ThreadMode.MAIN) //Indica que a função só deve ser executada na thread principal
-    public void atualizaListaAlunoEvent(AtualizaListaAlunoEvent alunoEvent) {
+    public void atualizaListaAlunoEvent(AtualizaListaContatoEvent alunoEvent) {
+        if(swipe.isRefreshing()) swipe.setRefreshing(false);
         carregaLista();
     }
 
