@@ -58,7 +58,6 @@ public class ListaContatosActivity extends AppCompatActivity {
             @Override
             public void onRefresh() {
                 sincronizador.buscaTodos();
-                sincronizador.sincronizaContatosInternos();
             }
         });
 
@@ -89,7 +88,6 @@ public class ListaContatosActivity extends AppCompatActivity {
         registerForContextMenu(listaContatos);
 
         sincronizador.buscaTodos();
-        sincronizador.sincronizaContatosInternos();
 
     }
 

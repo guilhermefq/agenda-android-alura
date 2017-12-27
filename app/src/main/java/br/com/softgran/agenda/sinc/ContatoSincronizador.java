@@ -58,6 +58,7 @@ public class ContatoSincronizador {
                 Log.i("Versão: ", preferences.getVersao());
 
                 bus.post(new AtualizaListaContatoEvent());
+                sincronizaContatosInternos();
             }
 
             @Override
@@ -77,7 +78,7 @@ public class ContatoSincronizador {
         }
     }
 
-    public void sincronizaContatosInternos() {
+    private void sincronizaContatosInternos() {
         final ContatoDAO dao = new ContatoDAO(context);
         List<Contato> contatos =  dao.listaNaoSincronizado();
 
