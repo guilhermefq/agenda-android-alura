@@ -9,6 +9,7 @@ import org.greenrobot.eventbus.EventBus;
 
 import java.util.List;
 
+import br.com.softgran.agenda.ListaContatosActivity;
 import br.com.softgran.agenda.dao.ContatoDAO;
 import br.com.softgran.agenda.dto.ContatoSync;
 import br.com.softgran.agenda.event.AtualizaListaContatoEvent;
@@ -98,6 +99,20 @@ public class ContatoSincronizador {
     }
 
 
+    public void deleta(final Contato contato) {
+        Call<Void> call = new RetrofitInicializador().getContatoService().deleta(contato.getId());
+        call.enqueue(new Callback<Void>() {
+            @Override
+            public void onResponse(Call<Void> call, Response<Void> response) {
+                ContatoDAO dao = new ContatoDAO(context);
+                dao.deleta(contato);
+                dao.close();
+            }
 
-
+            @Override
+            public void onFailure(Call<Void> call, Throwable t) {
+//                Toast.makeText(context, "Erro ao deletar o contato. Tente novamente!", Toast.LENGTH_SHORT).show();
+            }
+        });
+    }
 }

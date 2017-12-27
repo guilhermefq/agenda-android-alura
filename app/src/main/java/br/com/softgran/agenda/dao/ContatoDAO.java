@@ -16,7 +16,7 @@ import br.com.softgran.agenda.modelo.Contato;
 public class ContatoDAO extends SQLiteOpenHelper{
 
     public ContatoDAO(Context context) {
-        super(context, "Agenda", null, 8);
+        super(context, "Agenda", null, 9);
     }
 
     public void onCreate(SQLiteDatabase db) {
@@ -28,7 +28,8 @@ public class ContatoDAO extends SQLiteOpenHelper{
                 "site TEXT, " +
                 "nota REAL," +
                 "caminhoFoto TEXT" +
-                "sincronizado INT DEFAULT 0);";
+                "sincronizado INT DEFAULT 0" +
+                "desativado INT DEFATULT 0);";
         db.execSQL(sql);
     }
 
@@ -77,6 +78,9 @@ public class ContatoDAO extends SQLiteOpenHelper{
             case 7:
                 String addCampoSincronizado = "ALTER TABLE Contatos ADD COLUMN sincronizado INT DEFAULT 0";
                 db.execSQL(addCampoSincronizado);
+            case 8:
+                sql = "ALTER TABLE Contatos ADD COLUMN desativado INT DEFAULT 0";
+                db.execSQL(sql);
         }
     }
 
@@ -106,13 +110,14 @@ public class ContatoDAO extends SQLiteOpenHelper{
         dados.put("nota", contato.getNota());
         dados.put("caminhoFoto", contato.getCaminhoFoto());
         dados.put("sincronizado", contato.getSincronizado());
+        dados.put("desativado", contato.getDesativado());
         return dados;
     }
 
-
     public List<Contato> getContatos() {
         SQLiteDatabase db = getReadableDatabase();
-        Cursor c = db.rawQuery("SELECT * FROM Contatos", null);
+        String sql = "SELECT * FROM Contatos WHERE desativado = 0";
+        Cursor c = db.rawQuery(sql, null);
         List<Contato> contatoes = populaContatos(c);
         c.close();
         return contatoes;
@@ -131,6 +136,7 @@ public class ContatoDAO extends SQLiteOpenHelper{
             contato.setNota(c.getDouble(c.getColumnIndex("nota")));
             contato.setCaminhoFoto(c.getString(c.getColumnIndex("caminhoFoto")));
             contato.setSincronizado(c.getInt(c.getColumnIndex("sincronizado")));
+            contato.setDesativado(c.getInt(c.getColumnIndex("desativado")));
             contatos.add(contato);
         }
         return contatos;
@@ -140,7 +146,13 @@ public class ContatoDAO extends SQLiteOpenHelper{
         SQLiteDatabase db = getWritableDatabase();
 
         String[] params = {String.valueOf(contato.getId())};
-        db.delete("Contatos","id = ?",params);
+
+        if(contato.estaDesativado()){
+            db.delete("Contatos","id = ?",params);
+        } else {
+            contato.desativa();
+            altera(contato);
+        }
     }
 
     public void altera(Contato contato) {

@@ -28,11 +28,7 @@ import br.com.softgran.agenda.adapter.ContatosAdapter;
 import br.com.softgran.agenda.dao.ContatoDAO;
 import br.com.softgran.agenda.event.AtualizaListaContatoEvent;
 import br.com.softgran.agenda.modelo.Contato;
-import br.com.softgran.agenda.retrofit.RetrofitInicializador;
 import br.com.softgran.agenda.sinc.ContatoSincronizador;
-import retrofit2.Call;
-import retrofit2.Callback;
-import retrofit2.Response;
 
 public class ListaContatosActivity extends AppCompatActivity {
 
@@ -185,24 +181,15 @@ public class ListaContatosActivity extends AppCompatActivity {
             @Override
             public boolean onMenuItemClick(MenuItem item) {
 
-                Call<Void> call = new RetrofitInicializador().getContatoService().deleta(contato.getId());
-                call.enqueue(new Callback<Void>() {
-                    @Override
-                    public void onResponse(Call<Void> call, Response<Void> response) {
-                        ContatoDAO dao = new ContatoDAO(ListaContatosActivity.this);
-                        dao.deleta(contato);
-                        dao.close();
-                        Toast.makeText(ListaContatosActivity.this,
-                                "Deletado o contato " + contato.getNome(), Toast.LENGTH_SHORT).show();
-                        carregaLista();
-                    }
+                ContatoDAO dao = new ContatoDAO(ListaContatosActivity.this);
+                dao.deleta(contato);
+                dao.close();
+                Toast.makeText(ListaContatosActivity.this,
+                        "Deletado o contato " + contato.getNome(), Toast.LENGTH_SHORT).show();
+                carregaLista();
 
-                    @Override
-                    public void onFailure(Call<Void> call, Throwable t) {
-                        Toast.makeText(ListaContatosActivity.this,
-                                "Erro ao deletar o contato. Tente novamente!", Toast.LENGTH_SHORT).show();
-                    }
-                });
+                sincronizador.deleta(contato);
+
                 return false;
             }
         });
