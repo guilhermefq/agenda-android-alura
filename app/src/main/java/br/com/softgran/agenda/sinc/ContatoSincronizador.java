@@ -7,9 +7,12 @@ import android.widget.Toast;
 
 import org.greenrobot.eventbus.EventBus;
 
+import java.util.List;
+
 import br.com.softgran.agenda.dao.ContatoDAO;
 import br.com.softgran.agenda.dto.ContatoSync;
 import br.com.softgran.agenda.event.AtualizaListaContatoEvent;
+import br.com.softgran.agenda.modelo.Contato;
 import br.com.softgran.agenda.preferences.ContatoPreferences;
 import br.com.softgran.agenda.retrofit.RetrofitInicializador;
 import retrofit2.Call;
@@ -71,6 +74,27 @@ public class ContatoSincronizador {
         } else {
             buscaContatos();
         }
+    }
+
+    public void sincronizaContatosInternos() {
+        final ContatoDAO dao = new ContatoDAO(context);
+        List<Contato> contatos =  dao.listaNaoSincronizado();
+
+        Call<ContatoSync> call = new RetrofitInicializador().getContatoService().atualiza(contatos);
+
+        call.enqueue(new Callback<ContatoSync>() {
+            @Override
+            public void onResponse(Call<ContatoSync> call, Response<ContatoSync> response) {
+                ContatoSync contatoSync = response.body();
+                dao.sincroniza(contatoSync.getContatos());
+                dao.close();
+            }
+
+            @Override
+            public void onFailure(Call<ContatoSync> call, Throwable t) {
+
+            }
+        });
     }
 
 

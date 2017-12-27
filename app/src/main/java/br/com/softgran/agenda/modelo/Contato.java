@@ -1,7 +1,6 @@
 package br.com.softgran.agenda.modelo;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import com.fasterxml.jackson.annotation.JsonProperty;
 
 import java.io.Serializable;
 
@@ -17,6 +16,7 @@ public class Contato implements Serializable {
     private Double nota;
     private String caminhoFoto;
     private int desativado;
+    private int sincronizado;
 
     public String getId() {return id;}
     public void setId(String id) {this.id = id;}
@@ -49,5 +49,21 @@ public class Contato implements Serializable {
     @Override
     public String toString() {
         return getId() + " - " + getNome();
+    }
+
+    public void setSincronizado(int sincronizado) {
+        this.sincronizado = sincronizado;
+    }
+
+    public int getSincronizado() {
+        return sincronizado;
+    }
+
+    public void sincroniza() {
+        this.sincronizado = 1;
+    }
+
+    public void desincroniza() {
+        this.sincronizado = 0;
     }
 }

@@ -91,6 +91,8 @@ public class FormularioActivity extends AppCompatActivity {
                 Contato contato = helper.pegaContato();
                 ContatoDAO dao = new ContatoDAO(this);
 
+                contato.desincroniza();
+
                 if(contato.getId() != null){
                     dao.altera(contato);
                     Toast.makeText(FormularioActivity.this, "Contato " + contato.getNome() + " alterado!",

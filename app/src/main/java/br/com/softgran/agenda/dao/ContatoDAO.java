@@ -16,7 +16,7 @@ import br.com.softgran.agenda.modelo.Contato;
 public class ContatoDAO extends SQLiteOpenHelper{
 
     public ContatoDAO(Context context) {
-        super(context, "Agenda", null, 7);
+        super(context, "Agenda", null, 8);
     }
 
     public void onCreate(SQLiteDatabase db) {
@@ -27,7 +27,8 @@ public class ContatoDAO extends SQLiteOpenHelper{
                 "telefone TEXT, " +
                 "site TEXT, " +
                 "nota REAL," +
-                "caminhoFoto TEXT);";
+                "caminhoFoto TEXT" +
+                "sincronizado INT DEFAULT 0);";
         db.execSQL(sql);
     }
 
@@ -73,6 +74,9 @@ public class ContatoDAO extends SQLiteOpenHelper{
             case 6:
                 sql = "UPDATE Contatos SET caminhoFoto = NULL";
                 db.execSQL(sql);
+            case 7:
+                String addCampoSincronizado = "ALTER TABLE Contatos ADD COLUMN sincronizado INT DEFAULT 0";
+                db.execSQL(addCampoSincronizado);
         }
     }
 
@@ -101,6 +105,7 @@ public class ContatoDAO extends SQLiteOpenHelper{
         dados.put("site", contato.getSite());
         dados.put("nota", contato.getNota());
         dados.put("caminhoFoto", contato.getCaminhoFoto());
+        dados.put("sincronizado", contato.getSincronizado());
         return dados;
     }
 
@@ -125,6 +130,7 @@ public class ContatoDAO extends SQLiteOpenHelper{
             contato.setSite(c.getString(c.getColumnIndex("site")));
             contato.setNota(c.getDouble(c.getColumnIndex("nota")));
             contato.setCaminhoFoto(c.getString(c.getColumnIndex("caminhoFoto")));
+            contato.setSincronizado(c.getInt(c.getColumnIndex("sincronizado")));
             contatos.add(contato);
         }
         return contatos;
@@ -149,10 +155,11 @@ public class ContatoDAO extends SQLiteOpenHelper{
     @SuppressWarnings("SpellCheckingInspection")
     public boolean ehContato(String telefone) {
         SQLiteDatabase db = getReadableDatabase();// Pega uma instância de leitura do BD
+        String sql =  "SELECT * FROM Contatos WHERE telefone = ?";
 
         //Faz uma select, passando o telefone com parametro.
         //A consulta retorna um Cursor, apontando para o primeiro objeto da lista(do cursor)
-        Cursor cursor = db.rawQuery("SELECT * FROM Contatos WHERE telefone = ?", new String[]{telefone});
+        Cursor cursor = db.rawQuery(sql, new String[]{telefone});
         int count = cursor.getCount();
         cursor.close();
         return count > 0;
@@ -162,6 +169,9 @@ public class ContatoDAO extends SQLiteOpenHelper{
 
         for(Contato contato:
                 contatos) {
+
+            contato.sincroniza();
+
             if(existe(contato)) {// Verifica se o contato existe no BD interno
                 if(contato.estaDesativado()){
                     deleta(contato);
@@ -181,5 +191,12 @@ public class ContatoDAO extends SQLiteOpenHelper{
         int count = cursor.getCount();
         cursor.close();
         return count > 0;
+    }
+
+    public List<Contato> listaNaoSincronizado() {
+        SQLiteDatabase db = getReadableDatabase();
+        String sql = "SELECT * FROM Contatos WHERE sincronizado = 0";
+        Cursor cursor = db.rawQuery(sql, null);
+        return populaContatos(cursor);
     }
 }

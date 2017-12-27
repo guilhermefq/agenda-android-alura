@@ -8,6 +8,7 @@ import android.support.v4.app.ActivityCompat;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.ContextMenu;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -61,6 +62,7 @@ public class ListaContatosActivity extends AppCompatActivity {
             @Override
             public void onRefresh() {
                 sincronizador.buscaTodos();
+                sincronizador.sincronizaContatosInternos();
             }
         });
 
@@ -91,6 +93,7 @@ public class ListaContatosActivity extends AppCompatActivity {
         registerForContextMenu(listaContatos);
 
         sincronizador.buscaTodos();
+        sincronizador.sincronizaContatosInternos();
 
     }
 
@@ -100,10 +103,6 @@ public class ListaContatosActivity extends AppCompatActivity {
         eventBus.register(this);// Registra a Activity para que ele receba o evento do EventBus
         carregaLista();
     }
-
-//    private void buscaContatoServidor() {
-//        sincronizador.buscaContatoServidor();
-//    }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -214,9 +213,9 @@ public class ListaContatosActivity extends AppCompatActivity {
         List<Contato> contatos = dao.getContatos();
         dao.close();
 
-//        for(Contato contato: contatos) {
-//            Log.i("ID do Contato:", String.valueOf(contato.getId()));
-//        }
+        for(Contato contato: contatos) {
+            Log.i("Contato Sincronizado:", String.valueOf(contato.getSincronizado()));
+        }
 
         ListView listaContatos = (ListView) findViewById(R.id.lista_contatos);
         ContatosAdapter adapter = new ContatosAdapter(ListaContatosActivity.this, contatos);
