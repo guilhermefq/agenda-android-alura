@@ -198,9 +198,9 @@ public class ListaContatosActivity extends AppCompatActivity {
         List<Contato> contatos = dao.getContatos();
         dao.close();
 
-        for(Contato contato: contatos) {
-            Log.i("Contato Sincronizado:", String.valueOf(contato.getSincronizado()));
-        }
+//        for(Contato contato: contatos) {
+//            Log.i("Contato Sincronizado:", String.valueOf(contato.getSincronizado()));
+//        }
 
         ListView listaContatos = (ListView) findViewById(R.id.lista_contatos);
         ContatosAdapter adapter = new ContatosAdapter(ListaContatosActivity.this, contatos);

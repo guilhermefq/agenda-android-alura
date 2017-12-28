@@ -7,6 +7,9 @@ import android.widget.Toast;
 
 import org.greenrobot.eventbus.EventBus;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.List;
 
 import br.com.softgran.agenda.ListaContatosActivity;
@@ -48,14 +51,9 @@ public class ContatoSincronizador {
             public void onResponse(Call<ContatoSync> call, Response<ContatoSync> response) {
                 ContatoSync contatoSync = response.body();// Pega a resposta da requisição.Retorna o conteúdo do corpo(body) da requisição HTTP
 
-                String versao = contatoSync.getMomentoDaUltimaModificacao();
-                preferences.salvarVersao(versao);
+                sincroniza(contatoSync);
 
-                ContatoDAO contatoDAO = new ContatoDAO(context);
-                contatoDAO.sincroniza(contatoSync.getContatos());
-                contatoDAO.close();
-
-                Log.i("Versão: ", preferences.getVersao());
+//                Log.i("Versão: ", preferences.getVersao());
 
                 bus.post(new AtualizaListaContatoEvent());
                 sincronizaContatosInternos();
@@ -70,6 +68,41 @@ public class ContatoSincronizador {
         };
     }
 
+
+    //Pega a requisição do servidor e verifica se a versão server é mais recente que a atual
+    public void sincroniza(ContatoSync contatoSync) {
+        String versao = contatoSync.getMomentoDaUltimaModificacao();
+
+        Log.i("versao externa", versao);
+
+        if(temVersaoNova(versao))
+        preferences.salvarVersao(versao);
+        Log.i("versao atual", preferences.getVersao());
+
+        ContatoDAO contatoDAO = new ContatoDAO(context);
+        contatoDAO.sincroniza(contatoSync.getContatos());
+        contatoDAO.close();
+    }
+
+    private boolean temVersaoNova(String versao) {
+        if(!preferences.temVersao())
+            return true;
+
+        SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS");
+        try {
+            Date dataExterna = format.parse(versao);
+            Date dataInterna = format.parse(preferences.getVersao());//Versão Internar dos dados
+
+            Log.i("versao interna ", preferences.getVersao());
+
+            return dataExterna.after(dataInterna);
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+
+        return false;
+    }
+
     public void buscaTodos() {
         if(preferences.temVersao()){
             buscaNovosContatos();
@@ -82,14 +115,15 @@ public class ContatoSincronizador {
         final ContatoDAO dao = new ContatoDAO(context);
         List<Contato> contatos =  dao.listaNaoSincronizado();
 
+        dao.close();
+
         Call<ContatoSync> call = new RetrofitInicializador().getContatoService().atualiza(contatos);
 
         call.enqueue(new Callback<ContatoSync>() {
             @Override
             public void onResponse(Call<ContatoSync> call, Response<ContatoSync> response) {
                 ContatoSync contatoSync = response.body();
-                dao.sincroniza(contatoSync.getContatos());
-                dao.close();
+                sincroniza(contatoSync);
             }
 
             @Override

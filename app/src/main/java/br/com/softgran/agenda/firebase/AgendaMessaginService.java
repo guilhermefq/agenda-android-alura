@@ -14,6 +14,7 @@ import java.util.Map;
 import br.com.softgran.agenda.dao.ContatoDAO;
 import br.com.softgran.agenda.dto.ContatoSync;
 import br.com.softgran.agenda.event.AtualizaListaContatoEvent;
+import br.com.softgran.agenda.sinc.ContatoSincronizador;
 
 /**
  * Created by GUIFA on 19/12/2017.
@@ -39,9 +40,8 @@ public class AgendaMessaginService extends FirebaseMessagingService {
             ObjectMapper mapper = new ObjectMapper(); //Objeto do Jackson que faz a desserialização do json para um objeto
             try {
                 ContatoSync contatoSync = mapper.readValue(json, ContatoSync.class); //O objeto retornado é um contatoSync. Possui a List e uma string momentoDaUltimaModi...
-                ContatoDAO dao = new ContatoDAO(this);
-                dao.sincroniza(contatoSync.getContatos());//Funcao do dao que recebe uma lista de Contatos e sincroniza com o banco.
-                dao.close();
+
+                new ContatoSincronizador(AgendaMessaginService.this).sincroniza(contatoSync);
 
                 EventBus eventBus = EventBus.getDefault();//Cria um EventBus para avisar a ListContatosActivity para carreagarnovamente a lista.
                 eventBus.post(new AtualizaListaContatoEvent());
